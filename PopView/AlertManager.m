@@ -8,7 +8,7 @@
 
 #import "AlertManager.h"
 
-
+static NSString *Notification_Dismiss =@"dimiss_SYAlert";
 
 typedef void (^handler)(SYAlertAction *action);
 @interface SYAlertAction()
@@ -26,17 +26,19 @@ typedef void (^handler)(SYAlertAction *action);
     {
         action.handlerblock=handler;
         action.confirmbutton=[UIButton buttonWithType:UIButtonTypeCustom];
-        [action.confirmbutton addTarget:self action:@selector(click:) forControlEvents:UIControlEventTouchUpInside];
+        [action.confirmbutton addTarget:action action:@selector(clickButton:) forControlEvents:UIControlEventTouchUpInside];
+        [action.confirmbutton setTitleColor:[UIColor colorWithRed:0 green:0 blue:0.6 alpha:0.7] forState:UIControlStateNormal];
         [action.confirmbutton setTitle:title forState:UIControlStateNormal];
     }
     return action;
 }
--(IBAction)click:(id)sender
+-(IBAction)clickButton:(id)sender
 {
     if(_handlerblock)
     {
         __weak  typeof(self) wself=self;
         _handlerblock(wself);
+        [[NSNotificationCenter defaultCenter]postNotificationName:Notification_Dismiss object:nil];
     }
 }
 
@@ -70,7 +72,8 @@ typedef void (^handler)(SYAlertAction *action);
      self = [super initWithFrame:CGRectMake(0, 0, rect.size.width, rect.size.height)];
     if(self)
     {
-        [self setBackgroundColor:[UIColor clearColor]];
+        [self setBackgroundColor:[UIColor colorWithRed:0 green:0 blue:0 alpha:0.5]];
+        [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(dismiss) name:Notification_Dismiss object:nil];
         _clcikHandles=[[NSMutableArray alloc]init];
         
         _titleLabel=[[UILabel alloc]init];
@@ -89,10 +92,11 @@ typedef void (^handler)(SYAlertAction *action);
         
         _confirmView=[[UIView alloc]init];
         _confirmView.translatesAutoresizingMaskIntoConstraints=NO;
+        [_confirmView setBackgroundColor:[UIColor whiteColor]];
         
         _backView=[[UIView alloc]init];
         _backView.translatesAutoresizingMaskIntoConstraints=NO;
-        [_backView setBackgroundColor:[UIColor colorWithRed:0 green:0 blue:0 alpha:0.5]];
+        [_backView setBackgroundColor:[UIColor whiteColor]];
         [self addSubview:_backView];
         
         
@@ -111,7 +115,7 @@ typedef void (^handler)(SYAlertAction *action);
         [_backView addSubview:_messageLabel];
         [_backView addSubview:_confirmView];
         NSDictionary *dic_backSub=NSDictionaryOfVariableBindings(_titleLabel,_confirmView,_messageLabel);
-        NSString *VFL_BackSub_H=@"H:|-[_titleLabel]-|";
+        NSString *VFL_BackSub_H=@"H:|-0-[_titleLabel]-0-|";
         NSString *VFL_BackSubM_H=@"H:[_messageLabel(==_titleLabel)]";
         NSString *VFL_BackSubC_H=@"H:[_confirmView(==_titleLabel)]";
         NSString *VFL_BackSub_V=@"V:|-0-[_titleLabel(30)]-10-[_messageLabel]-10-[_confirmView(30)]-0-|";
@@ -132,7 +136,6 @@ typedef void (^handler)(SYAlertAction *action);
     [UIView animateWithDuration:0.3 animations:^{
         [self setAlpha:1.0];
     } completion:^(BOOL finished) {
-        
     }];
 }
 -(void)showInKeyWindow
@@ -187,7 +190,9 @@ typedef void (^handler)(SYAlertAction *action);
         }];
         
         [_clcikHandles enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-            [_confirmView addSubview:((SYAlertAction *)obj).confirmbutton];
+            UIButton *button=((SYAlertAction *)obj).confirmbutton;
+            button.translatesAutoresizingMaskIntoConstraints=NO;
+            [_confirmView addSubview:button];
         }];
         
         NSMutableArray *constraints=[[NSMutableArray alloc]init];
@@ -197,24 +202,24 @@ typedef void (^handler)(SYAlertAction *action);
             {
                 if(i==(_clcikHandles.count-1))
                 {
-                    [constraints addObject:[NSLayoutConstraint constraintWithItem:_confirmView attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:current attribute:NSLayoutAttributeLeft multiplier:1 constant:0]];
+                    [constraints addObject:[NSLayoutConstraint constraintWithItem:_confirmView attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:current attribute:NSLayoutAttributeRight multiplier:1 constant:0]];
                     
-                    [constraints addObject:[NSLayoutConstraint constraintWithItem:current attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:_confirmView attribute:NSLayoutAttributeLeft multiplier:1 constant:0]];
+                    [constraints addObject:[NSLayoutConstraint constraintWithItem:_confirmView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:current attribute:NSLayoutAttributeLeft multiplier:1 constant:0]];
                 }else
                 {
                     UIButton *nextbutton=((SYAlertAction *)_clcikHandles[i+1]).confirmbutton;
-                    [constraints addObject:[NSLayoutConstraint constraintWithItem:_confirmView attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:current attribute:NSLayoutAttributeLeft multiplier:1 constant:0]];
+                    
+                    [constraints addObject:[NSLayoutConstraint constraintWithItem:_confirmView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:current attribute:NSLayoutAttributeLeft multiplier:1 constant:0]];
                     
                     [constraints addObject:[NSLayoutConstraint constraintWithItem:current attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:nextbutton attribute:NSLayoutAttributeLeft multiplier:1 constant:0]];
                 }
             }else if(i==(_clcikHandles.count-1))
             {
                 UIButton *prebutton=((SYAlertAction *)_clcikHandles[i-1]).confirmbutton;
-                [constraints addObject:[NSLayoutConstraint constraintWithItem:prebutton attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:current attribute:NSLayoutAttributeLeft multiplier:1 constant:0]];
                 
                 [constraints addObject:[NSLayoutConstraint constraintWithItem:prebutton attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:current attribute:NSLayoutAttributeWidth multiplier:1 constant:0]];
                 
-                [constraints addObject:[NSLayoutConstraint constraintWithItem:current attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:_confirmView attribute:NSLayoutAttributeLeft multiplier:1 constant:0]];
+                [constraints addObject:[NSLayoutConstraint constraintWithItem:current attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:_confirmView attribute:NSLayoutAttributeRight multiplier:1 constant:0]];
             }else
             {
                 UIButton *prebutton=((SYAlertAction *)_clcikHandles[i-1]).confirmbutton;
@@ -231,5 +236,9 @@ typedef void (^handler)(SYAlertAction *action);
         }
         [_confirmView addConstraints:constraints];
     }
+}
+-(void)dealloc
+{
+    [[NSNotificationCenter defaultCenter]removeObserver:self];
 }
 @end

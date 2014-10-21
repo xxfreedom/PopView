@@ -72,7 +72,15 @@
     SYAlertAction *action=[SYAlertAction actionWithTitle:@"确定" handler:^(SYAlertAction *action) {
         NSLog(@"确定");
     }];
+    SYAlertAction *action_NO=[SYAlertAction actionWithTitle:@"取消" handler:^(SYAlertAction *action) {
+        NSLog(@"取消");
+    }];
+    SYAlertAction *action_Forbid=[SYAlertAction actionWithTitle:@"不要再问我" handler:^(SYAlertAction *action) {
+        NSLog(@"不要再问我");
+    }];
     [alert addAlertAction:action];
+    [alert addAlertAction:action_NO];
+    [alert addAlertAction:action_Forbid];
     [alert showInKeyWindow];
 }
 -(void)dismisspAlert:(UIAlertController *)pAlert
