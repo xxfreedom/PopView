@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		1119B35F19F6378F006D48D9 /* AlertManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1119B35E19F6378F006D48D9 /* AlertManager.m */; };
+		1179A7C219F77C56006DB371 /* refresh@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1179A7C119F77C56006DB371 /* refresh@2x.png */; };
 		11B6F6BE19F0F2BC001154EB /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 11B6F6BD19F0F2BC001154EB /* main.m */; };
 		11B6F6C119F0F2BC001154EB /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 11B6F6C019F0F2BC001154EB /* AppDelegate.m */; };
 		11B6F6C419F0F2BC001154EB /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 11B6F6C319F0F2BC001154EB /* ViewController.m */; };
@@ -31,6 +32,7 @@
 /* Begin PBXFileReference section */
 		1119B35D19F6378F006D48D9 /* AlertManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AlertManager.h; sourceTree = "<group>"; };
 		1119B35E19F6378F006D48D9 /* AlertManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AlertManager.m; sourceTree = "<group>"; };
+		1179A7C119F77C56006DB371 /* refresh@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "refresh@2x.png"; sourceTree = "<group>"; };
 		11B6F6B819F0F2BC001154EB /* PopView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PopView.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		11B6F6BC19F0F2BC001154EB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		11B6F6BD19F0F2BC001154EB /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -99,6 +101,7 @@
 				11B6F6E219F10327001154EB /* ActionManger.m */,
 				1119B35D19F6378F006D48D9 /* AlertManager.h */,
 				1119B35E19F6378F006D48D9 /* AlertManager.m */,
+				1179A7C119F77C56006DB371 /* refresh@2x.png */,
 			);
 			path = PopView;
 			sourceTree = "<group>";
@@ -211,6 +214,7 @@
 			files = (
 				11B6F6C719F0F2BC001154EB /* Main.storyboard in Resources */,
 				11B6F6CC19F0F2BC001154EB /* LaunchScreen.xib in Resources */,
+				1179A7C219F77C56006DB371 /* refresh@2x.png in Resources */,
 				11B6F6C919F0F2BC001154EB /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -309,7 +313,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -344,7 +348,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
@@ -356,6 +360,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = PopView/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -366,6 +371,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = PopView/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};

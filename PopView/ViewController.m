@@ -83,6 +83,17 @@
     [alert addAlertAction:action_Forbid];
     [alert showInKeyWindow];
 }
+
+- (IBAction)SYPAlertOpen:(id)sender {
+    SYPAlert *palert=[AlertManager createPAlertWithTitle:@"加载中..."];
+    [palert showInView:self.view];
+    
+    [palert performSelector:@selector(dismiss) withObject:nil afterDelay:3.0];
+}
+
+- (IBAction)SYTalertOpen:(id)sender {
+    [AlertManager showTalertWithTitle:@"这是一个测试" CloseTime:2.0];
+}
 -(void)dismisspAlert:(UIAlertController *)pAlert
 {
     [pAlert dismissViewControllerAnimated:YES completion:^{

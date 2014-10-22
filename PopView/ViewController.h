@@ -13,6 +13,8 @@
 - (IBAction)cAlertOpen:(id)sender;
 - (IBAction)pAlertOpen:(id)sender;
 - (IBAction)SYCAlertOpen:(id)sender;
+- (IBAction)SYPAlertOpen:(id)sender;
+- (IBAction)SYTalertOpen:(id)sender;
 
 @end
 

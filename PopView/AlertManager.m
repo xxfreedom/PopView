@@ -9,7 +9,7 @@
 #import "AlertManager.h"
 
 static NSString *Notification_Dismiss =@"dimiss_SYAlert";
-
+#define LightBlue [UIColor colorWithRed:0.25 green:0.64 blue:1.00 alpha:1.00]
 typedef void (^handler)(SYAlertAction *action);
 @interface SYAlertAction()
 
@@ -27,8 +27,10 @@ typedef void (^handler)(SYAlertAction *action);
         action.handlerblock=handler;
         action.confirmbutton=[UIButton buttonWithType:UIButtonTypeCustom];
         [action.confirmbutton addTarget:action action:@selector(clickButton:) forControlEvents:UIControlEventTouchUpInside];
-        [action.confirmbutton setTitleColor:[UIColor colorWithRed:0 green:0 blue:0.6 alpha:0.7] forState:UIControlStateNormal];
+        [action.confirmbutton setTitleColor:LightBlue forState:UIControlStateNormal];
         [action.confirmbutton setTitle:title forState:UIControlStateNormal];
+        [action.confirmbutton.layer setBorderWidth:0.5];
+        [action.confirmbutton.layer setBorderColor:LightBlue.CGColor];
     }
     return action;
 }
@@ -51,6 +53,68 @@ typedef void (^handler)(SYAlertAction *action);
     SYCAlert *alert=[[SYCAlert alloc]initWithTitle:title AndMessage:message];
     return alert;
 }
++(id)createPAlertWithTitle:(NSString *)title
+{
+    SYPAlert *palert=[[SYPAlert alloc]initWithTitle:title];
+    return palert;
+}
++(id)createTAlertWithTitle:(NSString *)title
+{
+    SYTAlert *talert=[[SYTAlert alloc]initWithTitle:title];
+    return talert;
+}
++(void)showTalertWithTitle:(NSString *)title CloseTime:(CGFloat)closeTime
+{
+    SYTAlert *alert=[[self class] createTAlertWithTitle:title];
+    [alert showInKeyWindow];
+    [alert performSelector:@selector(dismiss) withObject:nil afterDelay:closeTime];
+}
+@end
+
+@implementation SYAlert
+-(id)init
+{
+    self=[super init];
+    if(self)
+    {
+        
+    }
+    return self;
+}
+-(void)showInView:(UIView *)view
+{
+    [view addSubview:self];
+    [self setAlpha:0.0];
+    [UIView animateWithDuration:0.2 animations:^{
+        [self setAlpha:1.0];
+    } completion:^(BOOL finished) {
+    }];
+}
+-(void)showInKeyWindow
+{
+    UIWindow *window=[[[UIApplication sharedApplication]windows] lastObject];
+    [self showInView:window];
+}
+-(void)showInNormalWindow
+{
+    __block UIWindow  * keywindow;
+    [[[UIApplication sharedApplication]windows]enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        if(((UIWindow *)obj).windowLevel==UIWindowLevelNormal)
+        {
+            keywindow=obj;
+        }
+    }];
+    [self showInView:keywindow];
+}
+-(void)dismiss
+{
+    [UIView animateWithDuration:0.2 animations:^{
+        [self setAlpha:0.0];
+    } completion:^(BOOL finished) {
+        [self removeFromSuperview];
+    }];
+}
+
 @end
 
 @interface SYCAlert()
@@ -129,39 +193,18 @@ typedef void (^handler)(SYAlertAction *action);
     }
     return self;
 }
+
 -(void)showInView:(UIView *)view
 {
-    [view addSubview:self];
-    [self setAlpha:0.0];
-    [UIView animateWithDuration:0.3 animations:^{
-        [self setAlpha:1.0];
-    } completion:^(BOOL finished) {
-    }];
+    [super showInView:view];
+//    _backView.layer.transform = CATransform3DMakeScale(0.2, 0.2, 1);
+//    [UIView animateWithDuration:0.2 animations:^{
+//        _backView.layer.transform = CATransform3DMakeScale(1.1, 1.1, 1);
+//    } completion:^(BOOL finished) {
+//        _backView.layer.transform = CATransform3DIdentity;
+//    }];
 }
--(void)showInKeyWindow
-{
-    UIWindow *window=[[[UIApplication sharedApplication]windows] lastObject];
-    [self showInView:window];
-}
--(void)showInNormalWindow
-{
-    __block UIWindow  * keywindow;
-    [[[UIApplication sharedApplication]windows]enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-        if(((UIWindow *)obj).windowLevel==UIWindowLevelNormal)
-        {
-            keywindow=obj;
-        }
-    }];
-    [self showInView:keywindow];
-}
--(void)dismiss
-{
-    [UIView animateWithDuration:0.3 animations:^{
-        [self setAlpha:0.0];
-    } completion:^(BOOL finished) {
-        [self removeFromSuperview];
-    }];
-}
+
 -(CGSize)countSubviewsFrameWith:(NSString*)title withWidth:(int)width withFontSize:(int)fontSize
 {
     CGSize labelSize;
@@ -242,3 +285,144 @@ typedef void (^handler)(SYAlertAction *action);
     [[NSNotificationCenter defaultCenter]removeObserver:self];
 }
 @end
+
+
+@interface SYPAlert()
+@property(nonatomic,strong)UILabel *titleLable;
+@property(nonatomic,strong)UIImageView *refreshImageView;
+@property(nonatomic,strong)UIView *backView;
+@end
+@implementation SYPAlert
+-(id)initWithTitle:(NSString *)title
+{
+    self=[super init];
+    if(self)
+    {
+        [self setBackgroundColor:[UIColor colorWithRed:0 green:0 blue:0 alpha:0.5]];
+        [self setTranslatesAutoresizingMaskIntoConstraints:NO];
+        _titleLable=[[UILabel alloc]init];
+        [_titleLable setTranslatesAutoresizingMaskIntoConstraints:NO];
+        [_titleLable setTextAlignment:NSTextAlignmentLeft];
+        [_titleLable setFont:[UIFont systemFontOfSize:20]];
+        _titleLable.text=title;
+        [_titleLable setTextColor:[UIColor colorWithRed:0.25 green:0.64 blue:1.00 alpha:1.00]];
+        
+        
+        _refreshImageView=[[UIImageView alloc]init];
+        [_refreshImageView setTranslatesAutoresizingMaskIntoConstraints:NO];
+        [_refreshImageView setImage:[UIImage imageNamed:@"refresh.png"]];
+        
+        _backView=[[UIView alloc]init];
+        [_backView setTranslatesAutoresizingMaskIntoConstraints:NO];
+        [_backView setBackgroundColor:[UIColor whiteColor]];
+        [self addSubview:_backView];
+        
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:_backView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:290]];
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:_backView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:55]];
+        
+
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:self attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:_backView attribute:NSLayoutAttributeCenterX multiplier:1 constant:0]];
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:self attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:_backView attribute:NSLayoutAttributeCenterY multiplier:1 constant:0]];
+        
+    
+        [_backView addSubview:_titleLable];
+        [_backView addSubview:_refreshImageView];
+        NSDictionary *lblDics=NSDictionaryOfVariableBindings(_titleLable,_refreshImageView);
+        NSString *lblFormV=@"V:|-0-[_titleLable]-0-|";
+        [_backView addConstraint:[NSLayoutConstraint constraintWithItem:_backView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:_titleLable attribute:NSLayoutAttributeCenterX multiplier:1 constant:-20]];
+        [_backView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:lblFormV options:0 metrics:nil views:lblDics]];
+        
+        NSString *refreshFormH=@"H:[_refreshImageView(25)]-15-[_titleLable]";
+        NSString *refreshFormV=@"V:|-15-[_refreshImageView(25)]-15-|";
+        
+        [_backView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:refreshFormH options:0 metrics:nil views:lblDics]];
+        [_backView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:refreshFormV options:0 metrics:nil views:lblDics]];
+        
+    }
+    return self;
+}
+-(void)didMoveToSuperview
+{
+    [super didMoveToSuperview];
+    if(self.superview)
+    {
+        [self.superview addConstraint:[NSLayoutConstraint constraintWithItem:self.superview attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeRight multiplier:1 constant:0]];
+        [self.superview addConstraint:[NSLayoutConstraint constraintWithItem:self.superview attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1 constant:0]];
+        [self.superview addConstraint:[NSLayoutConstraint constraintWithItem:self.superview attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1 constant:0]];
+        [self.superview addConstraint:[NSLayoutConstraint constraintWithItem:self.superview attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeBottom multiplier:1 constant:0]];
+        [self beginAnimation];
+    }
+}
+- (void)removeFromSuperview
+{
+    [self endAnimation];
+    [super removeFromSuperview];
+}
+-(void)beginAnimation
+{
+    
+    CABasicAnimation* rotationAnimation;
+    rotationAnimation = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
+    rotationAnimation.toValue = [NSNumber numberWithFloat: M_PI * 2.0 ];
+    rotationAnimation.duration = 1.0;
+    rotationAnimation.cumulative = YES;
+    rotationAnimation.repeatCount = MAXFLOAT;
+    [_refreshImageView.layer addAnimation:rotationAnimation forKey:@"rotationAnimation"];
+}
+-(void)endAnimation
+{
+    [_refreshImageView.layer removeAllAnimations];
+}
+
+
+@end
+
+@interface SYTAlert()
+@property(nonatomic,strong)UILabel *titleLable;
+@end
+@implementation SYTAlert
+
+-(id)initWithTitle:(NSString *)title
+{
+    self=[super init];
+    if(self)
+    {
+        [self setBackgroundColor:[UIColor clearColor]];
+        [self setTranslatesAutoresizingMaskIntoConstraints:NO];
+        _titleLable=[[UILabel alloc]init];
+        [_titleLable setTranslatesAutoresizingMaskIntoConstraints:NO];
+        [_titleLable setTextAlignment:NSTextAlignmentLeft];
+        [_titleLable setFont:[UIFont systemFontOfSize:20]];
+        _titleLable.text=[NSString stringWithFormat:@"  %@  ",title];
+        [_titleLable setTextColor:[UIColor whiteColor]];
+        [_titleLable setBackgroundColor:[UIColor colorWithRed:0 green:0 blue:0 alpha:0.9]];
+        _titleLable.clipsToBounds=YES;
+        _titleLable.layer.cornerRadius=5;
+        [self addSubview:_titleLable];
+        NSDictionary *dic_title=NSDictionaryOfVariableBindings(_titleLable);
+        NSString *VFL_V=@"V:[_titleLable(30)]-(80)-|";
+        NSString *VFL_H=@"H:[_titleLable(>=0)]";
+        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:VFL_H options:NSLayoutFormatAlignAllBaseline metrics:nil views:dic_title]];
+        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:VFL_V options:NSLayoutFormatAlignAllBaseline metrics:nil views:dic_title]];
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:self attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:_titleLable attribute:NSLayoutAttributeCenterX multiplier:1 constant:0]];
+        
+        
+    }
+    return self;
+}
+-(void)didMoveToSuperview
+{
+    [super didMoveToSuperview];
+    if(self.superview)
+    {
+        [self.superview addConstraint:[NSLayoutConstraint constraintWithItem:self.superview attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeRight multiplier:1 constant:0]];
+        [self.superview addConstraint:[NSLayoutConstraint constraintWithItem:self.superview attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1 constant:0]];
+        [self.superview addConstraint:[NSLayoutConstraint constraintWithItem:self.superview attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1 constant:0]];
+        [self.superview addConstraint:[NSLayoutConstraint constraintWithItem:self.superview attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeBottom multiplier:1 constant:0]];
+    }
+}
+@end
+
+
+
+
